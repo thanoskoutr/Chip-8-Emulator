@@ -2,7 +2,7 @@ CC=g++
 CFLAGS=-Wall -g
 OBJECTS=chip8.o main.o
 EXECUTABLE=main
-LDFLAGS=
+LDFLAGS=-lSDL2
 
 all: $(EXECUTABLE)
 
