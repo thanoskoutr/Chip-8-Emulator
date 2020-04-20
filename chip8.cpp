@@ -182,7 +182,7 @@ void Chip8::emulateCycle()
         break;
 
         case 0x0006:  //  8xy6 - SHR Vx {, Vy}: Set Vx = Vx SHR 1.
-          if (V[(opcode & 0x0F00) >> 8] & 0x1 == 1) // Check if LSB == 1
+          if ((V[(opcode & 0x0F00) >> 8] & 0x1) == 1) // Check if LSB == 1
             V[0xF] = 1;
           else
             V[0xF] = 0;
@@ -379,7 +379,7 @@ int Chip8::loadApplication(const char * file)
 
   /* Open File */
   FILE *fptr;
-  long file_size;
+  unsigned long file_size;
 
   if ((fptr = fopen(file,"rb")) == NULL)
   {
@@ -420,7 +420,7 @@ int Chip8::loadApplication(const char * file)
     free(buffer);
     return -1;
   }
-  for(int i = 0; i < file_size; i++)
+  for(unsigned int i = 0; i < file_size; i++)
     memory[i + 512] = buffer[i];  // Start program at (0x200 == 512)
 
   /* Close File, Free Buffer */
