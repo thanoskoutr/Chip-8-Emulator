@@ -1,8 +1,19 @@
 CC=g++
 CFLAGS=-Wall -g
+OBJECTS=chip8.o main.o
+EXECUTABLE=main
+LDFLAGS=
 
-main: chip8.o main.o
-	$(CC) -o main main.o chip8.o
+all: $(EXECUTABLE)
+
+$(EXECUTABLE): $(OBJECTS)
+	$(CC) $(CFLAGS) -o $@ $(OBJECTS) $(LDFLAGS)
+
+chip8.o: chip8.cpp chip8.h
+	$(CC) $(CFLAGS) -c $<
+
+main.o: main.cpp
+	$(CC) $(CFLAGS) -c $<
 
 clean:
-	rm chip8.o main.o
+	rm *.o
