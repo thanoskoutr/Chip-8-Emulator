@@ -26,13 +26,22 @@ The stack is:
 
 
 ### Keyboard
- The computers which originally used the Chip-8 Language had a 16-key hexadecimal keypad with the following layout:
- ```
-1	2	3	C
-4	5	6	D
-7	8	9	E
-A	0	B	F
-```
+The computers which originally used the Chip-8 Language had a 16-key hexadecimal keypad with the following layout:
+
+| 1 | 2 | 3 | C |
+|---|---|---|---|
+| 4 | 5 | 6 | D |
+| 7 | 8 | 9 | E |
+| A | 0 | B | F |
+
+Maps to this configuration:
+
+| 1 | 2 | 3 | 4 |
+|---|---|---|---|
+| Q | W | E | R |
+| A | S | D | F |
+| Z | X | C | V |
+
 
 This layout must be mapped into various other configurations to fit the keyboards of today's platforms.
 
