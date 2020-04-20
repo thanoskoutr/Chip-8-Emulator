@@ -1,7 +1,9 @@
 #ifndef CHIP8_H
 #define CHIP8_H
 
-#define SCREEN_SIZE 64*32
+#define SCREEN_WIDTH 64
+#define SCREEN_HEIGHT 32
+#define SCREEN_SIZE SCREEN_WIDTH*SCREEN_HEIGHT
 #define KEY_SIZE 16
 #define MEMORY_SIZE 4096
 
@@ -12,7 +14,6 @@ public:
   ~Chip8(); // Destructor declaration
 
   void emulateCycle();  // Emulates one cycle of the system
-  // int emulateCycle();
   int loadApplication(const char * file); // Loads the program in the memory
 
   bool drawFlag;  // draw flag for when to update screen
@@ -21,7 +22,7 @@ public:
 
 private:
   unsigned short opcode; // 35 Opcodes (2-bytes)
-  unsigned char memory[MEMORY_SIZE]; // 4KB RAM
+  unsigned char memory[MEMORY_SIZE]; // 1 byte * 4096 = 4KB RAM
   unsigned char V[16];  // 15 8-bit registers (1-byte)
   unsigned short I;     // 16-bit I register for storing memory addresses
   unsigned short pc;    // 16-bit program counter register
@@ -33,7 +34,6 @@ private:
   unsigned char sound_timer;  // 8-bit sound timer register
 
   void initialize();  // Clears memory, registers and screen
-  // int initialize();
 
 };
 
