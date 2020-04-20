@@ -384,7 +384,7 @@ int Chip8::loadApplication(const char * file)
   if ((fptr = fopen(file,"rb")) == NULL)
   {
     printf("Error! opening program\n");
-    return -1;
+    return 1;
   }
 
   /* Check file size */
@@ -399,7 +399,7 @@ int Chip8::loadApplication(const char * file)
   {
     fprintf(stderr, "Memory error! Could not allocate %ld bytes of memory\n", file_size);
     fclose(fptr);
-    return -1;
+    return 1;
   }
 
   /* Copy the file into the buffer */
@@ -409,7 +409,7 @@ int Chip8::loadApplication(const char * file)
     fprintf(stderr, "Read error! Could not read %ld bytes of memory\n", file_size);
     fclose(fptr);
     free(buffer);
-    return -1;
+    return 1;
   }
 
   /* Copy buffer to Chip8 memory */
@@ -418,7 +418,7 @@ int Chip8::loadApplication(const char * file)
     fprintf(stderr, "Error! Program of %ld bytes too big for memory \n", file_size);
     fclose(fptr);
     free(buffer);
-    return -1;
+    return 1;
   }
   for(unsigned int i = 0; i < file_size; i++)
     memory[i + 512] = buffer[i];  // Start program at (0x200 == 512)
