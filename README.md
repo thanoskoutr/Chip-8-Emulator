@@ -122,3 +122,9 @@ Because many programs often need to output a number to the screen, CHIP-8 contai
 
 ## FIXME
 - fseek for file size not portable
+- Change datatypes to uint8_t, uint16_t, uint32_t
+- Add more Keyboard bindings and extra features
+- Display and Graphics revisit for adjustments-fixes
+- FIX emulation speed
+- Add Audio Support
+- Make it compact/executable (SDL library, comments, printf's)

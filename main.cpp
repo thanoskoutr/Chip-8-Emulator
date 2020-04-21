@@ -3,13 +3,15 @@
 #include <SDL2/SDL.h>
 #include "cleanup.h"
 #include <unordered_map>
-using namespace std;
+#include <chrono>
+#include <thread>
+// using namespace std;
 
 // Screen attributes
 const int Screen_Width  = 640;
 const int Screen_Height = 480;
 
-Chip8 Chip8App;
+Chip8 chip8;
 
 /*
  * Log an SDL error with some error message to the output stream of our choice
@@ -23,13 +25,13 @@ Chip8 Chip8App;
 
  void display()
  {
-	 Chip8App.emulateCycle();
-	 if(Chip8App.drawFlag)
+	 chip8.emulateCycle();
+	 if(chip8.drawFlag)
 	 {
 		 // Clear framebuffer
 		 // Update texture
 		 // Processed frame
-		 myChip8.drawFlag = false;
+		 chip8.drawFlag = false;
 	 }
  }
 
@@ -37,18 +39,11 @@ Chip8 Chip8App;
 int main (int argc, char **argv)
 {
 	/* Initialize the Chip8 system and load the game into the memory */
-	// if(argc < 2)
-	// {
-	//   printf("No File given\n");
-	// 	return 1;
-	// }
-
-	if (Chip8App.loadApplication(argv[1]) != 0) // initialization included
+	if(argc < 2)
 	{
-		std::cout << "Failed to Load Application" << std::endl;
+	  printf("No ROM given...\n");
 		return 1;
 	}
-
 
 	// First we need to start up SDL, and make sure it went ok
 	if (SDL_Init(SDL_INIT_VIDEO) != 0)
@@ -90,7 +85,7 @@ int main (int argc, char **argv)
 	}
 
 	// Create a mapping of SDL keyboard symbols to CHIP-8 keypad codes
-	std::unordered_map<int,int> keymap
+	std::unordered_map<int,unsigned char> keymap
 	{
 		{SDLK_1, 0x1}, {SDLK_2, 0x2}, {SDLK_3, 0x3}, {SDLK_4, 0xC},
 		{SDLK_q, 0x4}, {SDLK_w, 0x5}, {SDLK_e, 0x6}, {SDLK_r, 0xD},
@@ -100,34 +95,93 @@ int main (int argc, char **argv)
 	};
 
 
-	//Our event structure
+  // Temporary pixel buffer for updating texture
+  uint32_t pixels[2048];
+
+  // Load Application
+  if (chip8.loadApplication(argv[1]) != 0) // initialization included
+	{
+		std::cout << "Failed to Load Application" << std::endl;
+		return 1;
+	}
+
+	// Our event structure
 	SDL_Event e;
 	// For tracking if we want to quit
 	bool quit = false;
+
+  // Emulation loop
 	while (!quit)
 	{
-		// Read any events that occured, for now we'll just quit if any event occurs
+    chip8.emulateCycle();
+
+		// Read any SDL events that occured
 		while (SDL_PollEvent(&e))
 		{
 			//If user closes the window
 			if (e.type == SDL_QUIT)
 				quit = true;
 
-			//If user presses any key
+			// If user presses any key
 			if (e.type == SDL_KEYDOWN)
-				quit = true;
+      {
+        // If user presses ESC we exit
+        if (e.key.keysym.sym == SDLK_ESCAPE)
+          quit = true;
+        else
+        {
+          // find if valid is key pressed and set to 1
+          auto pressed_key = keymap.find(e.key.keysym.sym);
+          if (pressed_key != keymap.end())
+          {
+            printf ("Pressed Key: 0x%X\n", pressed_key->first);
+            printf ("Mapped to: 0x%X\n", pressed_key->second);
+            chip8.key[pressed_key->second] = 1;
+          }
 
-			//If user clicks the mouse
-			if (e.type == SDL_MOUSEBUTTONDOWN)
-				quit = true;
+        }
+      }
+
+      // If user releases any key
+      if (e.type == SDL_KEYUP)
+      {
+        // find if valid is key pressed and set to 0
+        auto released_key = keymap.find(e.key.keysym.sym);
+        if (released_key != keymap.end())
+        {
+          printf ("Released Key: 0x%X\n", released_key->first);
+          printf ("Mapped to: 0x%X\n", released_key->second);
+          chip8.key[released_key->second] = 0;
+        }
+
+      }
 		}
 
-		// First clear the renderer
-		SDL_RenderClear(renderer);
-		// Draw the texture
-		SDL_RenderCopy(renderer, texture, NULL, NULL);
-		// Update the screen
-		SDL_RenderPresent(renderer);
+    // If draw occurred, redraw SDL screen
+    if(chip8.drawFlag)
+ 	 {
+     chip8.drawFlag = false;
+
+     // Store pixels in temporary buffer
+     for (int i = 0; i < SCREEN_SIZE; ++i)
+     {
+       unsigned char pixel = chip8.gfx[i];
+       pixels[i] = (0x00FFFFFF * pixel) | 0xFF000000;
+     }
+     // Update SDL texture
+     SDL_UpdateTexture(texture, NULL, pixels, SCREEN_WIDTH* sizeof(Uint32));
+     // First clear the renderer
+     SDL_RenderClear(renderer);
+     // Draw the texture
+     SDL_RenderCopy(renderer, texture, NULL, NULL);
+     // Update the screen
+     SDL_RenderPresent(renderer);
+ 	 }
+
+   // Sleep to slow down emulation speed
+   // std::this_thread::sleep_for(std::chrono::microseconds(1200));
+   SDL_Delay(100/60);
+
 	}
 
 	// Clean up our objects and quit
