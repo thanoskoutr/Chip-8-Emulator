@@ -2,4 +2,4 @@
 # Ignore SDL tutorial
 SDL_Tutorial.cpp
 # Ignore Screenshots
-Screenshots/
+Helpers/
