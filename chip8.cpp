@@ -70,6 +70,63 @@ void Chip8::initialize()
 
 }
 
+int Chip8::loadApplication(const char * file)
+{
+	initialize();
+
+  /* Open File */
+  FILE *fptr;
+  unsigned long file_size;
+
+  if ((fptr = fopen(file,"rb")) == NULL)
+  {
+    printf("Error! opening program\n");
+    return 1;
+  }
+
+  /* Check file size */
+  fseek(fptr, 0, SEEK_END); // seek to end of file (non-portable !)
+  file_size = ftell(fptr);
+  fseek(fptr, 0, SEEK_SET); // seek back to beginning of file
+  printf("Filesize: %ld bytes\n", file_size);
+
+  /* Allocate memory to contain the whole file */
+  char *buffer = (char*) malloc(sizeof(char)*file_size);
+  if (buffer == NULL)
+  {
+    fprintf(stderr, "Memory error! Could not allocate %ld bytes of memory\n", file_size);
+    fclose(fptr);
+    return 1;
+  }
+
+  /* Copy the file into the buffer */
+  size_t res = fread(buffer, 1, file_size, fptr);
+  if (res != file_size)
+  {
+    fprintf(stderr, "Read error! Could not read %ld bytes of memory\n", file_size);
+    fclose(fptr);
+    free(buffer);
+    return 1;
+  }
+
+  /* Copy buffer to Chip8 memory */
+  if (file_size > MEMORY_SIZE - 512) // If file cannot fit into memory
+  {
+    fprintf(stderr, "Error! Program of %ld bytes too big for memory \n", file_size);
+    fclose(fptr);
+    free(buffer);
+    return 1;
+  }
+  for(unsigned int i = 0; i < file_size; i++)
+    memory[i + 512] = buffer[i];  // Start program at (0x200 == 512)
+
+  /* Close File, Free Buffer */
+  fclose(fptr);
+  free(buffer);
+
+  return 0;
+}
+
 void Chip8::emulateCycle()
 {
   /* Fetch next Opcode from memory */
@@ -371,61 +428,14 @@ void Chip8::emulateCycle()
       printf ("Unknown opcode: 0x%X\n", opcode);
   }
 
-}
+  /* Update Timers */
+  if (delay_timer > 0)
+    delay_timer--;
 
-int Chip8::loadApplication(const char * file)
-{
-	initialize();
-
-  /* Open File */
-  FILE *fptr;
-  unsigned long file_size;
-
-  if ((fptr = fopen(file,"rb")) == NULL)
+  if (sound_timer > 0)
   {
-    printf("Error! opening program\n");
-    return 1;
+    if (sound_timer == 1)
+      sound_timer--;
   }
 
-  /* Check file size */
-  fseek(fptr, 0, SEEK_END); // seek to end of file (non-portable !)
-  file_size = ftell(fptr);
-  fseek(fptr, 0, SEEK_SET); // seek back to beginning of file
-  printf("Filesize: %ld bytes\n", file_size);
-
-  /* Allocate memory to contain the whole file */
-  char *buffer = (char*) malloc(sizeof(char)*file_size);
-  if (buffer == NULL)
-  {
-    fprintf(stderr, "Memory error! Could not allocate %ld bytes of memory\n", file_size);
-    fclose(fptr);
-    return 1;
-  }
-
-  /* Copy the file into the buffer */
-  size_t res = fread(buffer, 1, file_size, fptr);
-  if (res != file_size)
-  {
-    fprintf(stderr, "Read error! Could not read %ld bytes of memory\n", file_size);
-    fclose(fptr);
-    free(buffer);
-    return 1;
-  }
-
-  /* Copy buffer to Chip8 memory */
-  if (file_size > MEMORY_SIZE - 512) // If file cannot fit into memory
-  {
-    fprintf(stderr, "Error! Program of %ld bytes too big for memory \n", file_size);
-    fclose(fptr);
-    free(buffer);
-    return 1;
-  }
-  for(unsigned int i = 0; i < file_size; i++)
-    memory[i + 512] = buffer[i];  // Start program at (0x200 == 512)
-
-  /* Close File, Free Buffer */
-  fclose(fptr);
-  free(buffer);
-
-  return 0;
 }
