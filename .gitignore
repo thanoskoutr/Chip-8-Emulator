@@ -1,5 +1,11 @@
 
 # Ignore SDL tutorial
 SDL_Tutorial.cpp
+
 # Ignore Screenshots
 Helpers/
+
+# Ignore compiled files
+chip8.o
+main.o
+main

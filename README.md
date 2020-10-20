@@ -1,6 +1,69 @@
 # Chip-8 Emulator
 
+## Description
+### CHIP-8 emulator in C++
+
+This is an emulator (interpreter more accurately) for the CHIP-8, an interpreted programming language, developed by Joseph Weisbecker and used on 8-bit microcomputers in the mid-1970s.
+
+> Space Invaders on the CHI-8 emulator.
+
+![Space Invaders](images/space-invaders.png)
+
+> Pong on the CHI-8 emulator.
+
+![Pong](images/pong.png)
+
+
+It was implemented as a side project to understand better a systems architecture, by implementing every assembly instruction in code. Chip-8 is a very simple 8-bit microcomputer, with a small but complete set of instructions (only 35 opcodes).
+
+
+## Tools
+- The emulator is implemented in C++.
+- The graphics are created with SDL2.
+- A Makefile is used for building the project.
+
+## Usage
+### Requirements
+- Currently it is only tested on Linux environment.
+- The SDL2 library is needed in order to build. For Debian users install the following packets:
+  ```
+  sudo apt-get install libsdl2-2.0
+  sudo apt-get install libsdl2-dev
+  ```
+For other Linux users follow the [SDL Guide](https://wiki.libsdl.org/Installation).
+
+### Build
+To build the project, just run the makefile in the repository:
+```
+make
+```
+This will create a `main` executable.
+
+### How to play
+In order to play a game, select one from the `Games/` folder and run the program with the game as a parameter, like:
+```
+./main Games/Paddle.ch8
+```
+All the games have the `.ch8` file extention.
+
+## To Do
+- [ ] fseek for file size not portable
+- [ ] Change datatypes to uint8_t, uint16_t, uint32_t
+- [ ] Add more Keyboard bindings and extra features
+- [ ] Display and Graphics revisit for adjustments-fixes
+- [ ] FIX emulation speed
+- [ ] Add Audio Support
+- [ ] Make it compact/executable (SDL library, comments, printf's)
+
+## Resources
+All credits go to the incredible resources, documentation and tutorials that are out there for anyone thats interested. Here are some that helped me and inspered me to make this project:
+- Cowgod's [Chip-8 Technical Reference Reference](http://devernay.free.fr/hacks/chip8/C8TECH10.HTM)
+- David Winter's [CHIP-8 emulation page](http://www.pong-story.com/chip8/)
+- Matthew Mikolay's [Document for Chip-8 Specifications](http://mattmik.com/files/chip8/mastering/chip8.html)
+- Laurence Muller's [Chip-8 Emulator Guide](http://www.multigesture.net/articles/how-to-write-an-emulator-chip-8-interpreter/)
+
 ## Chip-8 Specifications
+Below there are the Specifications of the microcomputer as a reference.
 
 ### General
 - Simple, interpreted, programming language
@@ -118,13 +181,3 @@ Because many programs often need to output a number to the screen, CHIP-8 contai
   | Reserved for  &nbsp;  &nbsp; |  
   |  interpreter  &nbsp;  &nbsp; &nbsp; &nbsp;|  
   +---------------+= 0x000 (0) Start of Chip-8 RAM
-
-
-## FIXME
-- fseek for file size not portable
-- Change datatypes to uint8_t, uint16_t, uint32_t
-- Add more Keyboard bindings and extra features
-- Display and Graphics revisit for adjustments-fixes
-- FIX emulation speed
-- Add Audio Support
-- Make it compact/executable (SDL library, comments, printf's)
