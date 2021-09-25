@@ -4,11 +4,11 @@
 
 This is an emulator (interpreter more accurately) for the CHIP-8, an interpreted programming language, developed by Joseph Weisbecker and used on 8-bit microcomputers in the mid-1970s.
 
-> Space Invaders on the CHI-8 emulator.
+> Space Invaders on the CHIP-8 emulator.
 
 ![Space Invaders](images/space-invaders.png)
 
-> Pong on the CHI-8 emulator.
+> Pong on the CHIP-8 emulator.
 
 ![Pong](images/pong.png)
 
